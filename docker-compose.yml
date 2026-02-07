@@ -40,6 +40,16 @@ services:
       - 8989:8989
     restart: unless-stopped
 
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    volumes:
+      - ./config/recyclarr:/config
+    user: ${PUID}:${PGID}
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
@@ -101,6 +111,24 @@ services:
     ports:
       - 8096:8096
     restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    network_mode: bridge
+    ports:
+      - 8097:8096
+    volumes:
+      - ./config/jellyfin:/config
+      - ./cache/jellyfin:/cache
+      - ${DATA_PATH}/media:/media:ro
+    devices:
+      - /dev/dri:/dev/dri
+    restart: 'unless-stopped'
 
   flareresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
